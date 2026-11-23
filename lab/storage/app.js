@@ -53,7 +53,7 @@ function forecast(s) {
     return;
   }
   text("status", forecastStatus(s));
-  text("direction", d.forecast < 0 ? "Estimated withdrawal" : d.forecast > 0 ? "Estimated injection" : "Estimated change");
+  text("direction", d.forecast < 0 ? "Estimated stock decrease" : d.forecast > 0 ? "Estimated stock increase" : "Estimated stock change");
   text("number", format(Math.abs(d.forecast), 1));
   byId("number").append(el("small", "Bcf"));
   text("range", "80% range for net change · " + sign(d.low, 1) + " to " + sign(d.high, 1) + " Bcf");
