@@ -4,7 +4,7 @@
 
 Weather-adjusted U.S. natural gas storage nowcasts, chronological backtests and a timestamped forecast ledger.
 
-**[Open the live project](https://neurax-jb.github.io/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter/lab/storage/) · [Research portfolio](https://neurax-jb.github.io/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter/lab/)**
+**[Open this project](https://neurax-jb.github.io/henry-hub-storage-forecaster/) · [Research portfolio](https://neurax-jb.github.io/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter/lab/)**
 
 **Methods and tools:** Python, NumPy, statistical modelling, time-series validation.
 
@@ -23,8 +23,8 @@ In the 23 November 2026 historical replay, the model reduced mean absolute error
 - [Shared data provenance](lab/data/README.md)
 
 ## Run locally
-Serve the root with `python -m http.server 8000` and visit `http://localhost:8000/lab/storage/`. The snapshot contains the files required to display the dashboard. Run the Python model tests on Linux, macOS or WSL with Python 3.11 or later: install NumPy with `python -m pip install numpy`, then run `python -m unittest discover -s lab/storage`. The refresh pipeline uses Unix file-permission operations; use Linux, macOS or WSL when rebuilding it. Rebuilding shared data also requires `xlrd==2.0.2`. The static dashboard can be served on Windows. The official forecast publication and scoring pipeline remains in the [canonical research repository](https://github.com/NeuraX-JB/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter); this project snapshot is not a separate prospective track record.
+Serve the root with `python -m http.server 8000` and visit `http://localhost:8000/`. The snapshot contains the files required to display the dashboard. Run the Python model tests on Linux, macOS or WSL with Python 3.11 or later: install NumPy with `python -m pip install numpy`, then run `python -m unittest discover -s lab/storage`. Run the dashboard regressions with `node --test lab/storage/app.test.cjs`. The refresh pipeline uses Unix file-permission operations; use Linux, macOS or WSL when rebuilding it. Rebuilding shared data also requires `xlrd==2.0.1`. The static dashboard can be served on Windows. For the pinned CI environment and complete checks, follow [validation instructions](VALIDATION.md). The official forecast publication and scoring pipeline remains in the [canonical research repository](https://github.com/NeuraX-JB/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter); this project snapshot is not a separate prospective track record.
 
 ## Source and publication
 
-This repository is a project-specific snapshot of the [canonical research lab](https://github.com/NeuraX-JB/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter). The live site and automated updates remain there, so the existing website and forecast ledger are preserved. Check the [source and attribution notes](DATA_SOURCES.md) before reusing third-party data. No new license is granted. Research and educational use; not investment advice.
+This repository is a project-specific snapshot of the [canonical research lab](https://github.com/NeuraX-JB/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter). The original automated updates and publication ledger remain there. This repository hosts a separately inspectable historical snapshot; [source revisions and frozen-data hashes](SOURCE_SNAPSHOT.json) identify it. Check the [source and attribution notes](DATA_SOURCES.md) before reusing third-party data. No new license is granted. Research and educational use; not investment advice.

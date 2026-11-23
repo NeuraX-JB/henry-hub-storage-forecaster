@@ -2,17 +2,17 @@
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0e302e">
 <title>Henry Hub Storage Forecaster · Natural Gas Research</title>
-<meta name="description" content="A weather-adjusted forecast of the next Lower 48 natural gas storage change, compared with a five-year seasonal benchmark and scored against EIA releases.">
+<meta name="description" content="Archived Lower 48 storage research: a weather-adjusted nowcast, a five-year seasonal benchmark, and separate historical and public forecast records.">
 <link rel="stylesheet" href="storage.css"><script src="app.js" defer></script></head>
 <body><a class="skip" href="#main">Skip to forecast</a>
-<header><div class="shell nav"><a class="brand" href="../"><svg aria-hidden="true" viewBox="0 0 34 27"><path d="M2 21l8-10 6 5 9-13M15 24l7-8 5 3 5-7"/></svg>Gas Research <span>/ Lab</span></a><nav aria-label="Sections"><a href="#scores">Scorecard</a><a href="#method">Method</a></nav></div></header>
+<header><div class="shell nav"><a class="brand" href="../../"><svg aria-hidden="true" viewBox="0 0 34 27"><path d="M2 21l8-10 6 5 9-13M15 24l7-8 5 3 5-7"/></svg>Gas Research <span>/ Lab</span></a><nav aria-label="Sections"><a href="#scores">Scorecard</a><a href="#method">Method</a></nav></div></header>
 <main id="main">
 <section class="hero"><div class="shell"><p class="over">Storage research · Lower 48</p><h1>Henry Hub Storage Forecaster</h1><p class="intro">A weekly estimate of how much U.S. natural gas entered or left underground storage before the EIA publishes its total.</p></div></section>
-<div class="shell body"><p id="load" role="status">Loading forecast archive…</p>
+<div class="shell body"><p class="snapshot">Historical project snapshot · compiled <time id="as-of">23 November 2026</time>. This copy does not refresh automatically. <a href="https://neurax-jb.github.io/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter/lab/storage/">Check the maintained dashboard</a>.</p><p id="load" role="status">Loading forecast archive…</p>
 <noscript><p>Enable JavaScript to explore the charts, or <a href="backtest.csv">download the historical forecasts as CSV</a>.</p></noscript>
 <div id="app" hidden>
-<section class="forecast-layout" aria-label="Current forecast">
-<div class="forecast"><div class="topline"><p class="over">Storage week ending <span id="target"></span></p><span class="status" id="status"></span></div>
+<section class="forecast-layout" aria-label="Forecast recorded in this snapshot">
+<div class="forecast"><div class="topline"><p class="over">Storage week ending <span id="target"></span></p><span class="status" id="status" role="status"></span></div>
 <p class="direction" id="direction"></p><div id="number" class="call"></div>
 <p class="range" id="range"></p>
 <div class="when"><div><span>Forecast recorded</span><strong id="issue"></strong></div><div><span>Scheduled EIA release</span><strong id="due"></strong></div></div>
@@ -27,9 +27,9 @@
 
 <section class="section"><div class="section-heading"><div><p class="over">Walk-forward replay</p><h2>Weekly storage changes</h2></div><label class="select-label">History <select id="weeks"><option value="13">13 weeks</option><option value="26" selected>26 weeks</option><option value="52">52 weeks</option></select></label></div>
 <figure class="chart-frame" aria-labelledby="chart-caption"><figcaption id="chart-caption">Change in Lower 48 working gas, Bcf</figcaption><div class="legend"><span class="actual">EIA actual</span><span class="model">Weather model</span><span class="base">Five-year baseline</span></div><svg id="chart" role="img" aria-label="Weekly actual storage changes and the two historical forecasts"></svg></figure>
-<div class="table-head"><details id="history-details"><summary>Weekly values</summary><div class="table-scroll"><table><thead><tr><th>Week ended</th><th>Actual</th><th>Model</th><th>Baseline</th><th>80% range</th></tr></thead><tbody id="history-body"></tbody></table></div></details><a class="download" href="backtest.csv" download>Download replay CSV ↓</a></div></section>
+<div class="table-head"><details id="history-details"><summary>Weekly values</summary><div class="table-scroll" tabindex="0" role="region" aria-label="Weekly replay values, horizontally scrollable"><table><thead><tr><th scope="col">Week ended</th><th scope="col">Actual</th><th scope="col">Model (Bcf)</th><th scope="col">Baseline (Bcf)</th><th scope="col">80% range</th></tr></thead><tbody id="history-body"></tbody></table></div></details><a class="download" href="backtest.csv" download>Download replay CSV ↓</a></div></section>
 
-<section class="section"><div class="section-heading"><div><p class="over">Timestamped records</p><h2>Forecast ledger</h2></div></div><div class="table-scroll"><table><thead><tr><th>Week ended</th><th>Model</th><th>Baseline</th><th>EIA actual</th><th>Record</th></tr></thead><tbody id="ledger"></tbody></table></div><p class="fine">Open a week to inspect the frozen estimate, UTC issue time, training period and input file hashes. Positive changes are injections. Negative changes are withdrawals.</p></section>
+<section class="section"><div class="section-heading"><div><p class="over">Timestamped records</p><h2>Forecast ledger</h2></div></div><div class="table-scroll" tabindex="0" role="region" aria-label="Forecast ledger, horizontally scrollable"><table><thead><tr><th scope="col">Week ended</th><th scope="col">Model (Bcf)</th><th scope="col">Baseline (Bcf)</th><th scope="col">EIA actual</th><th scope="col">Record</th></tr></thead><tbody id="ledger"></tbody></table></div><p class="fine">Open a week to inspect the frozen estimate, UTC issue time, training period and input file hashes. Positive changes are injections. Negative changes are withdrawals.</p></section>
 
 <section id="method" class="section method"><p class="over">Model notes</p><h2>How the forecast works</h2>
 <details open><summary>Target and observed weather</summary><p>The target is the change in EIA’s Lower 48 working gas inventory between consecutive Friday mornings, measured in billion cubic feet (Bcf). For each week, the model uses NOAA’s population-weighted U.S. heating and cooling degree days (HDD and CDD, 65°F base) from the previous Friday through Thursday. It produces its estimate after the weather week closes and before the storage report. “Henry Hub” identifies the market context. The storage total covers the Lower 48 states.</p></details>
@@ -38,4 +38,4 @@
 <details><summary>Publication and prospective scoring</summary><p>The first complete estimate recorded for a target week is frozen. The pipeline checks the EIA’s stated next release and holiday schedule before accepting it. The live score uses the net change in the first EIA weekly release table captured by the pipeline and requires evidence that a successful public Pages deployment contained the identical forecast before the release. A missed release or missing publication evidence leaves a forecast unscored. Later changes to shared historical series can update the replay.</p></details>
 <p class="links"><a href="https://ir.eia.gov/ngs/ngs.html">EIA release</a><a href="https://ir.eia.gov/ngs/schedule.html">Release calendar</a><a href="https://ftp.cpc.ncep.noaa.gov/htdocs/degree_days/weighted/daily_data/">NOAA degree days</a><a href="../data/manifest.json">Source manifest</a><a href="model.py">Model source</a></p></section>
 </div></div></main>
-<footer><div class="shell"><span>John Barreto · Natural gas research</span><a href="../">All research tools ↑</a></div></footer></body></html>
+<footer><div class="shell"><span>John Barreto · Natural gas research</span><a href="../../">All research tools ↑</a></div></footer></body></html>

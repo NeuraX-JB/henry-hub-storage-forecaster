@@ -3,6 +3,7 @@ import csv
 import hashlib
 import io
 import json
+import math
 import os
 import re
 import tempfile
@@ -99,6 +100,11 @@ def parse_report(raw):
     total = next(r for r in rows if r and r[0].strip().lower() == "total")
     num = lambda idx: float(total[idx].replace(",", "").strip())
     now, prev, change = num(1), num(4), num(flow_idx)
+    if not all(math.isfinite(v) for v in (now, prev, change)) or min(now, prev) < 0:
+        raise ValueError("EIA stocks/change must be finite and stocks nonnegative.")
+    week, next_date = parsed_date(ending[1]), parsed_date(release[1])
+    if week.weekday() != 4 or not week < issued.date() < next_date:
+        raise ValueError("EIA reporting dates are inconsistent.")
     if abs(now-prev-change) > 1:
         raise ValueError("EIA stocks and reported change disagree.")
     return {"week": parsed_date(ending[1]), "issued": issued, "next_date": parsed_date(release[1]),
@@ -121,6 +127,11 @@ def deadline(next_date, markup):
 
 
 def load_shared():
+    manifest = json.loads((DATA / "manifest.json").read_text(encoding="utf-8"))
+    for name in ("storage", "weather"):
+        actual_hash = hashlib.sha256((DATA / (name + ".csv")).read_bytes()).hexdigest()
+        if actual_hash != manifest["sources"][name]["sha256"]:
+            raise ValueError(f"{name}.csv does not match its source manifest; refresh the snapshot together.")
     with (DATA / "storage.csv").open() as fh:
         stocks, changes = {}, {}
         for r in csv.DictReader(fh):
@@ -128,8 +139,12 @@ def load_shared():
             if k in stocks or k.weekday() != 4:
                 raise ValueError("Invalid or duplicate storage week.")
             stocks[k] = float(r["working_gas_bcf"])
+            if not math.isfinite(stocks[k]) or stocks[k] < 0:
+                raise ValueError("Storage stocks must be finite and nonnegative.")
             if r["change_bcf"].strip():
                 changes[k] = float(r["change_bcf"])
+                if not math.isfinite(changes[k]):
+                    raise ValueError("Storage changes must be finite.")
     with (DATA / "weather.csv").open() as fh:
         weather = {}
         for r in csv.DictReader(fh):
@@ -141,7 +156,40 @@ def load_shared():
             if "period_end" in r and r["period_end"] != (k-timedelta(days=1)).isoformat():
                 raise ValueError("Weather end must be Thursday.")
             weather[k] = (float(r["hdd"]), float(r["cdd"]))
+            if any(not math.isfinite(v) or v < 0 for v in weather[k]):
+                raise ValueError("Degree days must be finite and nonnegative.")
+    if not stocks or not weather:
+        raise ValueError("Storage and weather histories must contain observations.")
     return stocks, changes, weather
+
+
+def read_outcome(path, issue):
+    """Reconcile a captured outcome to its raw release before it can be scored."""
+    outcome = json.loads(path.read_text(encoding="utf-8"))
+    expected = "ledger/" + issue["week"] + "-release.csv"
+    if outcome["week"] != issue["week"] or outcome["raw_file"] != expected:
+        raise ValueError("Captured outcome belongs to a different forecast week.")
+    raw = (HERE / expected).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != outcome["source_sha256"]:
+        raise ValueError("Captured EIA release no longer matches its recorded hash.")
+    report = parse_report(raw)
+    if (report["week"].isoformat() != issue["week"] or report["change"] != outcome["actual"]
+            or timestamp(report["issued"]) != outcome["reported_at"]):
+        raise ValueError("Captured outcome disagrees with its raw EIA release.")
+    return outcome
+
+
+def publication_matches(proof, issue, actual_release):
+    """Reject a cached proof with the wrong record URL or publication window."""
+    try:
+        sha = proof["commit"]
+        expected = f"https://raw.githubusercontent.com/{REPO}/{sha}/{PUBLIC_DIR}/{issue['week']}.json"
+        published = parse_stamp(proof["published_at"])
+        return (bool(re.fullmatch(r"[0-9a-f]{40}", sha)) and proof["source"] == expected
+                and parse_stamp(issue["issued_at"]) <= published
+                < min(parse_stamp(issue["scheduled_release"]), actual_release))
+    except (KeyError, ValueError, TypeError):
+        return False
 
 
 def reconcile_report(stocks, changes, report):
@@ -247,15 +295,17 @@ def run():
         outcome_path = LEDGER / (f.stem + "-release.json")
         proof_path = LEDGER / (f.stem + "-publication.json")
         if outcome_path.exists():
-            act = json.loads(outcome_path.read_text())
+            act = read_outcome(outcome_path, issue)
             row.update(act)
             if not proof_path.exists():
                 proof = verified_publication(f, issue, parse_stamp(act["reported_at"]))
                 if proof:
                     save_once(proof_path, json_bytes(proof))
             if proof_path.exists():
-                row["publication"] = json.loads(proof_path.read_text())
-                scored.append(row)
+                proof = json.loads(proof_path.read_text())
+                if publication_matches(proof, issue, parse_stamp(act["reported_at"])):
+                    row["publication"] = proof
+                    scored.append(row)
         history.append(row)
     fields = ["week", "forecast", "baseline", "actual", "low", "high", "hdd", "cdd", "heating_effect", "cooling_effect", "intercept"]
     out = io.StringIO(newline="")

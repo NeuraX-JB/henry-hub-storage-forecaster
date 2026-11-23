@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "repository": "NeuraX-JB/henry-hub-storage-forecaster",
+  "review_date": "2026-11-23",
+  "source_repository": "NeuraX-JB/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter",
+  "source_commit": "80c2e5321dadc95aadd4c7f65792fb15f0e2f156",
+  "reviewed_baseline_commit": "30148e34f458c2caa057ce36472e3a457f04064f",
+  "publication_mode": "Documented research snapshot. No live data refresh workflow is enabled here.",
+  "frozen_data_sha256": {
+    "lab/data/spot.csv": "c03f45420b2d41c931b999cf0780ffa319c79ac855698fcedf06bcd1a0510e84",
+    "lab/data/storage.csv": "e38197ed4c76d8d26744f2374a327629931262ed3be8e06ff976094eb76d2fe2",
+    "lab/data/weather.csv": "b68c71726b0e69ba14e1db3aa306ed3c34666c95be955ceca86d2c8879cbac9d",
+    "lab/storage/backtest.csv": "c594d711c07d03bf56a8684cfda779394a91a90d3a46e4a68db5b9fde6d4ad97",
+    "lab/storage/state.json": "8611fd33736be7162bbe33f202d9c81e9d2dfddd806d7005ed482bb3556f78f7"
+  }
+}

@@ -1,6 +1,6 @@
 # Shared observations
 
-Download the raw public inputs and rebuild all three CSV files with `python data/refresh.py` from the lab directory. Python 3.10+ and `xlrd==2.0.2` are sufficient. No API key is required. Run `python -m unittest discover -s data -p test_refresh.py` to test date alignment, missing-data handling and output hashes. Commit the three CSVs and their manifest together before publishing downstream products.
+Download the raw public inputs and rebuild all three CSV files with `python data/refresh.py` from the lab directory. Python 3.10+ and `xlrd==2.0.1` are sufficient. No API key is required. Run `python -m unittest discover -s data -p test_refresh.py` to test date alignment, missing-data handling and output hashes. Commit the three CSVs and their manifest together before publishing downstream products.
 
 ## Time and units
 

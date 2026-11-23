@@ -49,8 +49,16 @@ def predict(row, examples, previous_errors):
     if len(examples) < MIN_TRAIN:
         return None
     train = examples[-MAX_TRAIN:]
-    if train[-1][0].week >= row.week:
-        raise ValueError("Training must precede the target.")
+    weeks = [sample.week for sample, _ in train]
+    if weeks != sorted(set(weeks)) or any(week >= row.week for week in weeks):
+        raise ValueError("Training weeks must be distinct, chronological and precede the target.")
+    values = [*row.x, row.baseline]
+    for sample, actual in train:
+        values.extend([*sample.x, sample.baseline, actual])
+    if not all(isfinite(value) for value in values):
+        raise ValueError("Model inputs must be finite numbers.")
+    if any(not isfinite(error) or error < 0 for error in previous_errors):
+        raise ValueError("Calibration errors must be finite, nonnegative absolute errors.")
     matrix = np.array([sample.x for sample, _ in train])
     response = np.array([actual - sample.baseline for sample, actual in train])
     intercept, hdd_beta, cdd_beta = np.linalg.lstsq(matrix, response, rcond=None)[0]
