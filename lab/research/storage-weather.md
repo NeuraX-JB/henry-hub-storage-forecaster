@@ -25,6 +25,17 @@ In the checked-in chronological replay, the weather-adjusted model's mean absolu
 
 MAE is the arithmetic mean of absolute errors in Bcf. Relative reduction is 100 × (1 − model MAE / baseline MAE). Coverage is the share of observations within the model's reported interval. Year groups are by the target week's Friday. Annual reductions should not be averaged to obtain the overall reduction.
 
+## Two weeks where weather changed the answer
+
+The weather estimate came closer on 266 of 463 weeks (57.5%). The seasonal estimate came closer on 197, with zero ties at the precision stored in the CSV. The following weeks had the largest improvement and deterioration in absolute error respectively. All values are changes in reported stocks, in Bcf.
+
+| Week ending | Seasonal estimate | Weather estimate | EIA change | What happened |
+| --- | ---: | ---: | ---: | --- |
+| 30 January 2026 | −174.0 | −336.2 | −359.0 | The largest gain. The weather adjustment put the estimate closer to the unusually large stock decline, reducing the miss from 185.0 to 22.8 Bcf. |
+| 24 April 2020 | +74.0 | −13.5 | +70.0 | The largest deterioration. The model estimated a stock decline in a week when stocks rose. Its miss was 83.5 Bcf, versus 4.0 Bcf for the seasonal estimate. |
+
+These rows show what the model did. Determining which supply or demand changes drove either reporting week would require additional evidence. [Inspect all weekly estimates and model components](../storage/backtest.csv)
+
 ## Method
 
 The benchmark is the median of five previous seasonal analogs, using the Friday closest to the same month/day in each prior year. The model fits ordinary least squares to past deviations from that benchmark, with an intercept and two features: observed population-weighted HDD and CDD deviations from their respective five-year seasonal medians.
@@ -33,7 +44,7 @@ The rolling training window uses up to 156 previous eligible weeks, with a minim
 
 Sources are the EIA Lower 48 working gas series and NOAA CPC observed, population-weighted CONUS degree days, base 65°F. Weather is aggregated Friday through Thursday, an approximation to the inventory reference interval.
 
-## What the evidence does and does not show
+## How to interpret the result
 
 The result supports the usefulness of observed temperature exposure in this historical model. It does not establish that weather alone determines gas inventories or that model performance would be identical with data vintages actually available before each historical release. The source files may include historical revisions, and original release timing is not established for all weather observations. The result is a retrospective **nowcast replay**, not a test of forecast-weather accuracy or a verified live performance record. At the snapshot date the live ledger had no completed scored forecasts.
 
@@ -46,6 +57,6 @@ The calendar-year breakdown is descriptive, not an independent holdout test or a
 - [Recorded model state at the snapshot](https://github.com/NeuraX-JB/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter/blob/ba3b94ba3a97c3262099da73a25a3a33f06c34ee/lab/storage/state.json)
 - [Data provenance and definitions](../data/README.md)
 - [Live storage dashboard](https://neurax-jb.github.io/Henry-Hub-Futures-Curve-Explorer-How-the-Natural-Gas-Market-prices-winter/lab/storage/)
-- [Rebuild instructions](../README.md)
+- [Recalculate the scorecard from the archived CSV](../README.md#recalculate-the-scorecard)
 
 This analysis is for research and education, not investment advice.
